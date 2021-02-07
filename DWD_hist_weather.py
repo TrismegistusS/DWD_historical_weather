@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# DWD-Datenimport
+# DWD_hist_weather.py
+#
+# (c) 2021 Holger Leerhoff
 #
 # Dieses Notebook importiert Daten aus dem umfangreichen OpenData-Angebot
 # des Deutschen Wetterdienstes (DWD) in ein Pandas-Dataframe.
@@ -29,10 +31,7 @@ DWD_PFAD = 'https://opendata.dwd.de/climate_environment/CDC/' \
            'observations_germany/climate/daily/kl/historical/'
 
 # Hier wird zur Selektion der Wetterstationen das Bundesland im Klartext
-# festgelegt. Die Schreibweise sollte der auf der Seite:
-# https://opendata.dwd.de/climate_environment/CDC/observations_germany/
-# climate/daily/kl/historical/KL_Tageswerte_Beschreibung_Stationen.txt
-# entsprechen.
+# festgelegt.
 
 BUNDESLAND = 'Berlin'
 
