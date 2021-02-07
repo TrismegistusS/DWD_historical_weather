@@ -72,8 +72,7 @@ for node in soup.find_all('a'):
 # %% Die Wetterdaten ausgewählter Wetterstationen (als ZIP-Archiv) vom
 # DWD-OpenData-Server ziehen, darin die eigentliche Datendatei finden und
 # deren Inhalte einlesen.
-# Error-Handling für historische Stationen, die zwar noch gelistet sind,
-# für die aber keine Daten mehr vorliegen.
+# Error-Handling für Stationen ohne freie Daten.
 # Missings (-999.0 beim DWD) durch System-Missings ersetzen.
 # NB: Hier wird die Temperatur (TMK) ausgelesen, Modifikaton für andere
 # Messwerte sind leicht möglich.
@@ -94,7 +93,7 @@ for station in wetterstationen_ids[BUNDESLAND]:
                                                     ' TMK'],
                                            parse_dates=['MESS_DATUM']))
         print('.', end='')
-    except KeyError:  # für die Wetterstation liegen keine Daten (mehr) vor
+    except KeyError:  # für die Wetterstation liegen keine Daten vor
         print('-', end='')
 
 wetter = wetter.rename(columns={'STATIONS_ID': 'Station',

@@ -2,15 +2,16 @@
 
 #### (c) Holger Leerhoff (2021)
 
-Dieses Notebook importiert Daten aus dem umfangreichen OpenData-Angebot des Deutschen Wetterdienstes (DWD) in ein Pandas-Dataframe.
+Dieses Python-Skript importiert Daten aus dem umfangreichen OpenData-Angebot des Deutschen Wetterdienstes (DWD) in ein Pandas-Dataframe.
 
 ## Regionalität
-Die Auswahl der Wetterstationen erfolgt hier nach Bundesländern. Auf Grundlage des Bundeslands werden alle dort befindlichen Wetterstationen ermittelt, deren historische und aktuelle Daten heruntergeladen, extrahiert und (hier am Beispiel der Temperatur) in ein DataFrame geladen und können dann weiter ausgewertet werden.
+Die Zusammenstellung der Wetterstationen erfolgt hier nach Bundesländern. Auf Grundlage des Bundeslands werden alle dort befindlichen Wetterstationen ermittelt, deren Daten heruntergeladen, extrahiert und (hier am Beispiel der Temperatur) und können dann weiter ausgewertet werden.
 
 ## Daten
-Hier wird aktuell lediglich die tägliche Temperatur (TMK) der Wetterstationen ausgelesen, Modifikaton für andere Messwerte sind aber leicht möglich. Zwei kleine Beispielauswertungen (Entwicklung der täglichen und jährlichen Durchschnittstemperatur) sind angefügt.
+- es wird aktuell nur die tägliche Temperatur (TMK) der Wetterstationen ausgelesen, Modifikaton für andere Messwerte (Druck, Niederschlag, Sonnenscheindauer etc.) sind leicht möglich
+- es werden aktuell nur deren historische (bis vor 500 Tagen) Daten verarbeitet; eine Umstellung auf die aktuellen Daten (die letzten 500 Tage) ist leicht möglich
 
-Der Deutsche Wetterdienst (DWD) hat ein großartiges OpenData-Angebot. Richtlinien und Vorgaben für die Datennutzung finden sich auf der Webseite des DWD.
+Richtlinien und Vorgaben für die Datennutzung des DWD, etwa die Zitierweise, finden sich auf deren Homepage.
 
 ## Zweck
-Das Skript ist als Teilprodukt eines größeren Projekts entstanden und kann vielleicht als Grundlage für eigene Projekte dienen. Dazu ist das Skript auch ausführlich kommentiert.
+Das Skript ist als Teilprodukt eines größeren Projekts entstanden und kann vielleicht als Grundlage für eigene Projekte dienen. DasSkript ist ausführlich kommentiert. Zwei kleine Beispielauswertungen (langfristige Entwicklung der täglichen und jährlichen Durchschnittstemperatur) sind angefügt.
