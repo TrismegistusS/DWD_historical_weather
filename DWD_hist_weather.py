@@ -16,6 +16,7 @@
 # und (hier am Beispiel der Temperatur) in ein DataFrame geladen und können
 # dann weiter ausgewertet werden.
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -28,19 +29,17 @@ from zipfile import ZipFile
 import fnmatch
 
 DWD_PFAD = 'https://opendata.dwd.de/climate_environment/CDC/' \
-           'observations_germany/climate/daily/kl/historical/'
+           'observations_germany/climate/daily/kl/'
 
 # Hier wird zur Selektion der Wetterstationen das Bundesland im Klartext
 # festgelegt.
 
 BUNDESLAND = 'Berlin'
 
-# %% Laden der historischen und aktuellen Wetterstationen vom
-# DWD-OpenData-Server. Infos, Datensatzbeschreibung etc. hier:
-# https://opendata.dwd.de/climate_environment/CDC/observations_germany/
-# climate/daily/kl/historical/
+# %% Laden der Wetterstationen vom DWD-OpenData-Server. Infos, Datensatz-
+# beschreibung etc. hier: https://opendata.dwd.de/README.txt
 
-url = DWD_PFAD + 'KL_Tageswerte_Beschreibung_Stationen.txt'
+url = DWD_PFAD + 'historical/KL_Tageswerte_Beschreibung_Stationen.txt'
 stationen = pd.DataFrame()
 stationen = pd.read_fwf(url,
                         encoding='ISO-8859-1',
@@ -53,55 +52,64 @@ stationen = pd.read_fwf(url,
 # Aus dem Datensatz alle Stations-IDs nach Ländern extrahieren und als
 # separate Listen mit den Ländernamen als Schlüssel in ein dictionary packen.
 
-wetterstationen_ids = {}
+stationen_ids = {}
 for land in stationen['Bundesland'].unique():
-    wetterstationen_ids[land] = stationen[stationen['Bundesland']
-                                          == land]['Stations_id'].tolist()
+    stationen_ids[land] = stationen[stationen['Bundesland']
+                                    == land]['Stations_id'].tolist()
 
 # %% Zusammenstellen der URLs der ZIP-Archive der Wetterstationen vom
 # DWD-OpenData-Server. Aufrufen der html-Seite, parsen mit BeautifulSoup,
 # die entsprechenden URLs in einer Liste speichern.
 
-wetterstationen_dateinamen = {}
-page = requests.get(DWD_PFAD).text
+stationen_dateinamen = {}
+page = requests.get(DWD_PFAD+'historical').text
 soup = BeautifulSoup(page, 'html.parser')
 for node in soup.find_all('a'):
     if node.get('href').startswith('tageswerte_KL_'):
-        wetterstationen_dateinamen[int(node.text[14:19])] = node.text
+        stationen_dateinamen[int(node.text[14:19])] = node.text
 
 # %% Die Wetterdaten ausgewählter Wetterstationen (als ZIP-Archiv) vom
 # DWD-OpenData-Server ziehen, darin die eigentliche Datendatei finden und
 # deren Inhalte einlesen.
-# Error-Handling für Stationen ohne freie Daten.
-# Missings (-999.0 beim DWD) durch System-Missings ersetzen.
+# Zu allen Wetterstationen eine Datei mit aktuellen Wetterdaten suchen und
+# deren Inhalte einlesen.
+# Error-Handling für Stationen ohne freie Daten und Stationen ohne akt. Daten.
 # NB: Hier wird die Temperatur (TMK) ausgelesen, Modifikaton für andere
 # Messwerte sind leicht möglich.
 
 wetter = pd.DataFrame()
-for station in wetterstationen_ids[BUNDESLAND]:
-    try:
-        url = DWD_PFAD + wetterstationen_dateinamen[station]
-        gezippte_dateien = ZipFile(BytesIO(urlopen(url).read()))
-        csv_dateiname = fnmatch.filter(gezippte_dateien.namelist(),
-                                       "produkt*.txt")
-        csv_daten = gezippte_dateien.open(*csv_dateiname)
-        wetter = wetter.append(pd.read_csv(csv_daten,
-                                           sep=';',
-                                           na_values='-999.0',
-                                           usecols=['STATIONS_ID',
-                                                    'MESS_DATUM',
-                                                    ' TMK'],
-                                           parse_dates=['MESS_DATUM']))
-        print('.', end='')
-    except KeyError:  # für die Wetterstation liegen keine Daten vor
-        print('-', end='')
+for station in stationen_ids[BUNDESLAND]:
+    for typ in ['historical', 'recent']:
+        try:
+            if typ == 'historical':
+                url = DWD_PFAD+'historical/'+stationen_dateinamen[station]
+            else:
+                url = DWD_PFAD+'recent/tageswerte_KL_' + \
+                               str(station).zfill(5)+'_akt.zip'
+            gezippte_dateien = ZipFile(BytesIO(urlopen(url).read()))
+            csv_dateiname = fnmatch.filter(gezippte_dateien.namelist(),
+                                           'produkt*.txt')
+            csv_daten = gezippte_dateien.open(*csv_dateiname)
+            wetter = wetter.append(pd.read_csv(csv_daten,
+                                               sep=';',
+                                               usecols=['STATIONS_ID',
+                                                        'MESS_DATUM',
+                                                        ' TMK'],
+                                               parse_dates=['MESS_DATUM']))
+            print('.', end='')
+        except KeyError:  # für die Wetterstation liegen keine Daten vor
+            print('-', end='')
+        except IOError:  # für die Wetterstation liegen keine akt. Daten vor
+            print('-', end='')
 
-wetter = wetter.rename(columns={'STATIONS_ID': 'Station',
-                                'MESS_DATUM': 'Datum',
-                                ' TMK': 'Temp'})
+# Missings (-999.0 beim DWD) durch System-Missings ersetzen.
 
+wetter = (wetter.rename(columns={'STATIONS_ID': 'Station',
+                                 'MESS_DATUM': 'Datum',
+                                 ' TMK': 'Temp'})
+                .replace(-999.0, np.nan))
 
-# %% Statiosdaten nach Tagesmittelwerten zusammenfassen
+# %% Stationsdaten nach Tagesmittelwerten zusammenfassen
 
 tageswerte = wetter[['Datum', 'Temp']].groupby('Datum').mean()
 
