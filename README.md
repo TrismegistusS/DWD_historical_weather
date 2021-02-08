@@ -2,10 +2,9 @@
 
 #### (c) Holger Leerhoff (2021)
 
-Dieses Python-Skript importiert Daten aus dem umfangreichen OpenData-Angebot des Deutschen Wetterdienstes (DWD) in ein Pandas-Dataframe.
+*This Python script imports data from the Deutscher Wetterdienst's open data service into a Pandas dataframe. I suspect most people interested in this script are speaking German. Should there be need for an English version please open an issue. Thanks!*
 
-### English version
-*This Python script imports data from the Deutscher Wetterdienst's open data service into a Pandas dataframe. I suspect most people interested in this script are speaking German. Should there be need for an English version please open an issue aboce. Thanks!*
+Dieses Python-Skript importiert Daten aus dem umfangreichen OpenData-Angebot des Deutschen Wetterdienstes (DWD) in ein Pandas-Dataframe.
 
 ## Regionalität
 Die Zusammenstellung der Wetterstationen erfolgt hier nach Bundesländern. Auf Grundlage des Bundeslands werden alle dort befindlichen Wetterstationen ermittelt, deren tagesgenaue Daten (hier am Beispiel der Temperatur)  heruntergeladen und und können dann weiter ausgewertet werden.
