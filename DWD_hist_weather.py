@@ -102,20 +102,20 @@ for station in stationen_ids[BUNDESLAND]:
         except IOError:  # für die Wetterstation liegen keine akt. Daten vor
             print('-', end='')
 
-# Missings (-999.0 beim DWD) durch System-Missings ersetzen.
+# Missings (-999.0) durch System-Missings ersetzen.
 
 wetter = (wetter.rename(columns={'STATIONS_ID': 'Station',
                                  'MESS_DATUM': 'Datum',
                                  ' TMK': 'Temp'})
                 .replace(-999.0, np.nan))
 
-# %% Stationsdaten nach Tagesmittelwerten zusammenfassen
+# %% Aus Stationsdaten regionale Tagesmittelwerte bilden
 
 tageswerte = wetter[['Datum', 'Temp']].groupby('Datum').mean()
 
 tageswerte['Jahr'] = tageswerte.index.year
 tageswerte['Monat'] = tageswerte.index.month
-tageswerte['Tag'] = tageswerte.index.dayofyear
+tageswerte['Tag_des_Jahres'] = tageswerte.index.dayofyear
 
 # =============================================================================
 # Beispiel-Auswertungen
@@ -124,7 +124,7 @@ tageswerte['Tag'] = tageswerte.index.dayofyear
 
 # %% Heatmap der täglichen Durchschnittstemperaturen
 
-ana = tageswerte.pivot(index='Jahr', columns='Tag', values='Temp')
+ana = tageswerte.pivot(index='Jahr', columns='Tag_des_Jahres', values='Temp')
 
 f, ax = plt.subplots(figsize=(20, 10))
 sns.heatmap(ana, vmin=-10, vmax=23, cmap="RdBu_r")
@@ -135,7 +135,8 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
 
 # %% Jährliche Durchschnittstemperaturen plus 5-Jahres-Mittel
 
-ana = tageswerte.pivot('Jahr', 'Tag', 'Temp')
+ana = tageswerte.pivot(index='Jahr', columns='Tag_des_Jahres', values='Temp')
+
 ana['Jahresmittel'] = ana.mean(axis=1)
 ana['Jahresmittel5'] = ana['Jahresmittel'].rolling(5).mean()
 
