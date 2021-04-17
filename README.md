@@ -11,7 +11,7 @@ Die Zusammenstellung der Wetterstationen erfolgt hier nach Bundesländern. Auf G
 
 ## Daten
 - es wird aktuell nur die tägliche Temperatur (TMK) der Wetterstationen ausgelesen, Modifikationen für andere/zusätzliche Messwerte (Druck, Niederschlag, Sonnenscheindauer etc.) sind leicht möglich
-- es werden aktuell die historischen (bis vor 500 Tagen) und die aktuellen Daten (die letzten 500 Tage) verarbeitet
+- es werden sowohl die historischen (bis vor 500 Tagen) als auch die aktuellen Daten (die letzten 500 Tage) verarbeitet
 
 Richtlinien und Vorgaben für die Datennutzung des DWD, etwa die Zitierweise, finden sich auf deren Homepage.
 
