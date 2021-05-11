@@ -25,11 +25,12 @@ from io import BytesIO
 from zipfile import ZipFile
 import fnmatch
 
-def tagestemp_land(auswertungsland):
+def tagestemp_land(auswertungsland, still=False):
     """
     Parameters
     ----------
-    land : Name of federal state
+    land : Name of federal state (required)
+    still: suppress progess indicators (optional, default: False)
 
     Returns
     -------
@@ -96,11 +97,14 @@ def tagestemp_land(auswertungsland):
                                                             'MESS_DATUM',
                                                             ' TMK'],
                                                    parse_dates=['MESS_DATUM']))
-                print('.', end='')
+                if not still:
+                    print('.', end='')
             except KeyError:  # für die Wetterstation liegen keine Daten vor
-                print('-', end='')
+                if not still:
+                    print('-', end='')
             except IOError:  # für die Wetterstation liegen keine akt. Daten vor
-                print('-', end='')
+                if not still:
+                    print('-', end='')
     # Missings (-999.0) durch System-Missings ersetzen.
     wetter = (wetter.rename(columns={'STATIONS_ID': 'Station',
                                      'MESS_DATUM': 'Datum',
