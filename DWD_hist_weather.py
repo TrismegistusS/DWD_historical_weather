@@ -25,13 +25,13 @@ from io import BytesIO
 from zipfile import ZipFile
 import fnmatch
 
-def tageswerte_land(auswertungsland, still=False):
+def tageswerte_land(auswertungsland, still=False, protokoll=False):
     """
     Parameters
     ----------
     land : Name of federal state (required)
     still: suppress progess indicators (optional, default: False)
-
+    protokoll: write wetterdaten.csv.gz (optional, default: False)
     Returns
     -------
     Pandas DataFrame with the state's daily average measured values:
@@ -94,9 +94,8 @@ def tageswerte_land(auswertungsland, still=False):
                     url = DWD_PFAD+'recent/tageswerte_KL_' + \
                                    str(station).zfill(5)+'_akt.zip'
                 gezippte_dateien = ZipFile(BytesIO(urlopen(url).read()))
-                csv_dateiname = fnmatch.filter(gezippte_dateien.namelist(),
-                                               'produkt*.txt')
-                # TODO: bei Protokollwunsch hier speichern
+                csv_dateiname = (fnmatch.filter(gezippte_dateien.namelist(),
+                                 'produkt*.txt'))
                 csv_daten = gezippte_dateien.open(*csv_dateiname)
                 wetter = wetter.append(pd.read_csv(csv_daten,
                                                    sep=';',
@@ -125,6 +124,9 @@ def tageswerte_land(auswertungsland, still=False):
                                      ' TNK': 'TempMin',
                                      ' SDK': 'SunshineDuration'})
                     .replace(-999.0, np.nan))
+    # Protokoll: gegebenenfalls großes DataFrame als komprimiertes csv speichern
+    if protokoll:
+        wetter.to_csv('./wetterprotokoll.csv.gz', index=False, compression='gzip')
     # Aus Stationsdaten regionale Tagesmittelwerte bilden
     tageswerte = wetter[['Datum', 'TempMean', 'HumidityMean', 'TempMax', 'TempMin',
                          'SunshineDuration']].groupby('Datum').mean()
