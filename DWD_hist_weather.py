@@ -83,6 +83,7 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
     #  - das Tagesmaximum der Temeratur in 2m Höhe in °C (TXK)
     #  - das Tagesminimum der Temeratur in 2m Höhe in °C (TNK)
     #  - die tägliche Sonnenscheindauer in h (SDK)
+    #  - das Tagesmittel der Windgeschwindigkeit im m/s
     # Im Datensatz sind noch weitere Messwerte vorhanden.
     wetter = pd.DataFrame()
     for station in stationen_ids[auswertungsland]:
@@ -105,7 +106,8 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                                                             ' UPM',
                                                             ' TXK',
                                                             ' TNK',
-                                                            ' SDK'],
+                                                            ' SDK',
+                                                            '  FM'],
                                                    parse_dates=['MESS_DATUM']))
                 if not still:
                     print('.', end='')
@@ -122,14 +124,15 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                                      ' UPM': 'HumidityMean',
                                      ' TXK': 'TempMax',
                                      ' TNK': 'TempMin',
-                                     ' SDK': 'SunshineDuration'})
+                                     ' SDK': 'SunshineDuration',
+                                     '  FM': 'Windspeed'})
                     .replace(-999.0, np.nan))
     # Protokoll: gegebenenfalls großes DataFrame als komprimiertes csv speichern
     if protokoll:
         wetter.to_csv('./wetterprotokoll.csv.gz', index=False, compression='gzip')
     # Aus Stationsdaten regionale Tagesmittelwerte bilden
     tageswerte = wetter[['Datum', 'TempMean', 'HumidityMean', 'TempMax', 'TempMin',
-                         'SunshineDuration']].groupby('Datum').mean()
+                         'SunshineDuration', 'Windspeed']].groupby('Datum').mean()
     tageswerte['Jahr'] = tageswerte.index.year
     tageswerte['Monat'] = tageswerte.index.month
     tageswerte['Tag_des_Jahres'] = tageswerte.index.dayofyear

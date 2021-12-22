@@ -18,6 +18,7 @@ Aktuell werden ausgelesen:
     - das Tagesmaximum der Temeratur in 2m Höhe in °C (TXK)
     - das Tagesminimum der Temeratur in 2m Höhe in °C (TNK)
     - die tägliche Sonnenscheindauer in h (SDK)
+    - das Tagesmittel der Windgeschwindigkeit im m/s (FM)
 
 Im DWD-Datensatz sind noch weitere Messwerte vorhanden, Modifikationen für andere/zusätzliche Messwerte sind leicht möglich.
 
