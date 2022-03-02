@@ -43,7 +43,7 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                     'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern',
                     'Niedersachsen', 'Nordrhein-Westfalen', 'Rheinland-Pfalz',
                     'Saarland', 'Sachsen', 'Sachsen-Anhalt',
-                    'Schleswig-Holstein', 'Thüringen'], 'Bitte Namem eines Bundeslands' \
+                    'Schleswig-Holstein', 'Thüringen'], 'Bitte Namen eines Bundeslands' \
                     ' als Parameter übergeben.'
     # Laden der Wetterstationen vom DWD-OpenData-Server. Infos, Datensatz-
     # beschreibung etc. hier: https://opendata.dwd.de/README.txt
@@ -80,8 +80,8 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
     # Hier werden ausgelesen:
     #  - das Tagesmittel der Temperatur in °C (TMK)
     #  - das Tagesmittel der relativen Feuchte in % (UPM)
-    #  - das Tagesmaximum der Temeratur in 2m Höhe in °C (TXK)
-    #  - das Tagesminimum der Temeratur in 2m Höhe in °C (TNK)
+    #  - das Tagesmaximum der Temperatur in 2m Höhe in °C (TXK)
+    #  - das Tagesminimum der Temperatur in 2m Höhe in °C (TNK)
     #  - die tägliche Sonnenscheindauer in h (SDK)
     #  - das Tagesmittel der Windgeschwindigkeit im m/s
     # Im Datensatz sind noch weitere Messwerte vorhanden.
@@ -147,7 +147,7 @@ def tagestemp_land(auswertungsland, still=False):  # for backwards compatibility
 
     Returns
     -------
-    Pandas DataFrame with the state's daily average temeratures
+    Pandas DataFrame with the state's daily average temperatures
     """
     tageswerte = tageswerte_land(auswertungsland)
     tageswerte = tageswerte[['TempMean', 'Jahr', 'Monat', 'Tag_des_Jahres']]
@@ -158,6 +158,6 @@ def tagestemp_land(auswertungsland, still=False):  # for backwards compatibility
 if __name__ == "__main__":
     import sys
     tageswerte = tageswerte_land(sys.argv[1])
-    print(f'\nJähliche Durchschnittstemperturen für {sys.argv[1]}.')
+    print(f'\nJähliche Durchschnittstemperaturen für {sys.argv[1]}.')
     print(tageswerte.groupby('Jahr')['TempMean'].mean())
         
