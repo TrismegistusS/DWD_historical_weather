@@ -43,7 +43,7 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                     'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern',
                     'Niedersachsen', 'Nordrhein-Westfalen', 'Rheinland-Pfalz',
                     'Saarland', 'Sachsen', 'Sachsen-Anhalt',
-                    'Schleswig-Holstein', 'Thüringen'], 'Bitte Namen eines Bundeslands' \
+                    'Schleswig-Holstein', 'Thüringen'], 'Bitte Namem eines Bundeslands' \
                     ' als Parameter übergeben.'
     # Laden der Wetterstationen vom DWD-OpenData-Server. Infos, Datensatz-
     # beschreibung etc. hier: https://opendata.dwd.de/README.txt
@@ -80,12 +80,11 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
     # Hier werden ausgelesen:
     #  - das Tagesmittel der Temperatur in °C (TMK)
     #  - das Tagesmittel der relativen Feuchte in % (UPM)
-    #  - das Tagesmaximum der Temperatur in 2m Höhe in °C (TXK)
-    #  - das Tagesminimum der Temperatur in 2m Höhe in °C (TNK)
+    #  - das Tagesmaximum der Temeratur in 2m Höhe in °C (TXK)
+    #  - das Tagesminimum der Temeratur in 2m Höhe in °C (TNK)
     #  - die tägliche Sonnenscheindauer in h (SDK)
-    #  - das Tagesmittel der Windgeschwindigkeit im m/s
     # Im Datensatz sind noch weitere Messwerte vorhanden.
-    wetter = pd.DataFrame()
+    wetterliste = []
     for station in stationen_ids[auswertungsland]:
         for typ in ['historical', 'recent']:
             try:
@@ -98,17 +97,16 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                 csv_dateiname = (fnmatch.filter(gezippte_dateien.namelist(),
                                  'produkt*.txt'))
                 csv_daten = gezippte_dateien.open(*csv_dateiname)
-                wetter = wetter.append(pd.read_csv(csv_daten,
-                                                   sep=';',
-                                                   usecols=['STATIONS_ID',
-                                                            'MESS_DATUM',
-                                                            ' TMK',
-                                                            ' UPM',
-                                                            ' TXK',
-                                                            ' TNK',
-                                                            ' SDK',
-                                                            '  FM'],
-                                                   parse_dates=['MESS_DATUM']))
+                wetterliste.append(pd.read_csv(csv_daten,
+                                               sep=';',
+                                               usecols=['STATIONS_ID',
+                                                        'MESS_DATUM',
+                                                        ' TMK',
+                                                        ' UPM',
+                                                        ' TXK',
+                                                        ' TNK',
+                                                        ' SDK'],
+                                               parse_dates=['MESS_DATUM']))
                 if not still:
                     print('.', end='')
             except KeyError:  # für die Wetterstation liegen keine Daten vor
@@ -117,6 +115,7 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
             except IOError:  # für die Wetterstation liegen keine akt. Daten vor
                 if not still:
                     print('-', end='')
+    wetter = pd.concat(wetterliste)
     # Missings (-999.0) durch System-Missings ersetzen.
     wetter = (wetter.rename(columns={'STATIONS_ID': 'Station',
                                      'MESS_DATUM': 'Datum',
@@ -124,15 +123,14 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                                      ' UPM': 'HumidityMean',
                                      ' TXK': 'TempMax',
                                      ' TNK': 'TempMin',
-                                     ' SDK': 'SunshineDuration',
-                                     '  FM': 'Windspeed'})
+                                     ' SDK': 'SunshineDuration'})
                     .replace(-999.0, np.nan))
     # Protokoll: gegebenenfalls großes DataFrame als komprimiertes csv speichern
     if protokoll:
         wetter.to_csv('./wetterprotokoll.csv.gz', index=False, compression='gzip')
     # Aus Stationsdaten regionale Tagesmittelwerte bilden
     tageswerte = wetter[['Datum', 'TempMean', 'HumidityMean', 'TempMax', 'TempMin',
-                         'SunshineDuration', 'Windspeed']].groupby('Datum').mean()
+                         'SunshineDuration']].groupby('Datum').mean()
     tageswerte['Jahr'] = tageswerte.index.year
     tageswerte['Monat'] = tageswerte.index.month
     tageswerte['Tag_des_Jahres'] = tageswerte.index.dayofyear
@@ -147,7 +145,7 @@ def tagestemp_land(auswertungsland, still=False):  # for backwards compatibility
 
     Returns
     -------
-    Pandas DataFrame with the state's daily average temperatures
+    Pandas DataFrame with the state's daily average temeratures
     """
     tageswerte = tageswerte_land(auswertungsland)
     tageswerte = tageswerte[['TempMean', 'Jahr', 'Monat', 'Tag_des_Jahres']]
@@ -158,6 +156,5 @@ def tagestemp_land(auswertungsland, still=False):  # for backwards compatibility
 if __name__ == "__main__":
     import sys
     tageswerte = tageswerte_land(sys.argv[1])
-    print(f'\nJähliche Durchschnittstemperaturen für {sys.argv[1]}.')
+    print(f'\nJähliche Durchschnittstemperturen für {sys.argv[1]}.')
     print(tageswerte.groupby('Jahr')['TempMean'].mean())
-        
