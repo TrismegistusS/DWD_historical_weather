@@ -1,6 +1,6 @@
 # DWD_hist_weather.py
 
-#### (c) Holger Leerhoff (2021)
+#### (c) 2021, 2025 Holger Leerhoff
 
 *A simple and lightweight Python module importing data from the Deutscher Wetterdienst's open data service into a Pandas DataFrame. I suspect most people interested in this script are speaking German. Should there be need for an English version please open an issue. Thanks!*
 

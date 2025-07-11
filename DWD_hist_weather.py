@@ -3,7 +3,7 @@
 
 # DWD_hist_weather.py
 #
-# (c) 2021 Holger Leerhoff
+# (c) 2021, 2025 Holger Leerhoff
 #
 # Dieses Modul importiert Daten aus dem umfangreichen OpenData-Angebot
 # des Deutschen Wetterdienstes (DWD) in ein Pandas-Dataframe.
