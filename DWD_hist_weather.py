@@ -55,7 +55,7 @@ def tageswerte_land(auswertungsland, still=False, protokoll=False):
                             skiprows=[0, 1],
                             names=['Stations_id', 'von_datum', 'bis_datum',
                                    'Stationshoehe', 'geoBreite', 'geoLaenge',
-                                   'Stationsname', 'Bundesland'])
+                                   'Stationsname', 'Bundesland', 'Abgabe'])
     # Aus dem Datensatz alle Stations-IDs nach Ländern extrahieren und als
     # separate Listen mit den Ländernamen als Schlüssel in dictionary packen.
     stationen_ids = {}
